@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from 'react'
-import type { Ledger } from '../../types'
+import React from 'react'
+import type { Ledger, Transaction } from '../../types'
 import { AddTransaction } from './AddTransaction'
 import { TransactionList } from './TransactionList'
-import { DUMMY_LEDGER } from './dummyData'
 
 interface SidebarProps {
   currentWidth: number
   onResize: (newWidth: number) => void
+  ledger: Ledger
+  onAdd: (transaction: Transaction) => void
+  onRemove: (id: string) => void
 }
 
-export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
-  // Load from localStorage or use dummy data for testing
-  const [ledger, setLedger] = useState<Ledger>(() => {
-    const saved = localStorage.getItem('ledger')
-    if (saved) {
-      return JSON.parse(saved)
-    }
-    // Use dummy data if no saved data exists
-    return DUMMY_LEDGER
-  })
-
+export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove }: SidebarProps) {
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
     
@@ -42,19 +34,6 @@ export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
     document.addEventListener('mouseup', handleMouseUp)
   }
 
-  const handleAddTransaction = (transaction: { id: string; date: string; description: string; amount: number }) => {
-    setLedger([...ledger, transaction])
-  }
-
-  const handleRemoveTransaction = (id: string) => {
-    setLedger(ledger.filter(t => t.id !== id))
-  }
-
-  // Save to localStorage whenever ledger changes
-  useEffect(() => {
-    localStorage.setItem('ledger', JSON.stringify(ledger))
-  }, [ledger])
-
   return (
     <div className="relative h-screen py-8 px-4 bg-[var(--color-surface)] flex flex-col overflow-hidden">
       <h1 className="font-bold text-lg mb-4 shrink-0">Expense List</h1>
@@ -68,10 +47,10 @@ export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
       </div>
 
       {/* Add New Transaction */}
-      <AddTransaction onAdd={handleAddTransaction} />
+      <AddTransaction onAdd={onAdd} />
 
       {/* Transaction List */}
-      <TransactionList ledger={ledger} onRemove={handleRemoveTransaction} />
+      <TransactionList ledger={ledger} onRemove={onRemove} />
       
       {/* Resize Handle */}
       <div
