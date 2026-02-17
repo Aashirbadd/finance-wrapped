@@ -1,6 +1,7 @@
 # Finance Wrapped 💸
 
-<img width="1680" height="959" alt="image" src="https://github.com/user-attachments/assets/3e7913f3-2515-4e91-aed8-3ef91532702b" />
+<img width="1680" height="959" alt="Screenshot 2026-02-17 at 3 08 14 PM" src="https://github.com/user-attachments/assets/ed8bb25f-cb88-4baa-845e-5d05f771285c" />
+
 
 __Turn bank statements into beautiful visualizations. Parse PDFs locally, track expenses, and see your finances in a stunning dark-mode dashboard. 100% private — your data never leaves your browser.__
 
