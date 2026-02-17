@@ -2,7 +2,9 @@
 
 <img width="1680" height="959" alt="image" src="https://github.com/user-attachments/assets/3e7913f3-2515-4e91-aed8-3ef91532702b" />
 
-Transform boring bank statements into beautiful insights. Local OCR extraction meets sleek data storytelling. Built with React, Vite, and Tesseract.js for a fast, private, and lightweight financial overview.
+__Turn bank statements into beautiful visualizations. Parse PDFs locally, track expenses, and see your finances in a stunning dark-mode dashboard. 100% private — your data never leaves your browser.__
+
+Built with React and Vite for a fast, modern frontend experience. Styling powered by Tailwind CSS with a sleek dark theme. PDF text extraction handled locally via Tesseract.js OCR, keeping all processing on-device. Interactive area charts visualize your income, expenses, and net worth over time using Recharts.
 
 
 # React + TypeScript + Vite
