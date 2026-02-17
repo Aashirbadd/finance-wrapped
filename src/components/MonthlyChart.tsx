@@ -189,8 +189,8 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
                 <stop offset="95%" stopColor="#f87171" stopOpacity={0}/>
               </linearGradient>
               <linearGradient id="netIncomeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
@@ -271,13 +271,12 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
               type="monotone" 
               dataKey="netIncome" 
               name="Net Income" 
-              stroke="#8b5cf6" 
+              stroke="#3b82f6" 
               fillOpacity={1} 
               fill="url(#netIncomeGradient)" 
               strokeWidth={2}
               isAnimationActive={false}
               dot={false}
-             
             />
           </AreaChart>
         </ResponsiveContainer>
