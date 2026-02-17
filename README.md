@@ -1,3 +1,10 @@
+# Finance Wrapped!
+
+<img width="1680" height="956" alt="Screenshot 2026-02-17 at 2 39 28 PM" src="https://github.com/user-attachments/assets/6fe91ef2-347e-483b-b3b3-f6a920613070" />
+
+Transform boring bank statements into beautiful insights. Local OCR extraction meets sleek data storytelling. Built with React, Vite, and Tesseract.js for a fast, private, and lightweight financial overview.
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
