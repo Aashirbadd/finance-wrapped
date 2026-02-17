@@ -17,7 +17,7 @@ function App() {
   <div className="flex w-screen min-h-screen"> 
     
     <div 
-      className={`shrink-0 overflow-hidden ${isTransitioning ? 'transition-all duration-300' : ''}`}
+      className={`shrink-0 overflow-hidden h-screen ${isTransitioning ? 'transition-all duration-300' : ''}`}
       style={{ width: `${sidebarWidth}%`, minWidth: isCollapsed ? 0 : 498 }}
     >
       <Sidebar 
@@ -26,7 +26,7 @@ function App() {
       />
     </div>
 
-    <main className="flex-1">
+    <main className="flex-1 h-screen overflow-hidden">
       <div className="p-8">
         {/* Title and Toggle Sidebar Button on same line */}
         <div className="flex items-center gap-2 mb-4">
