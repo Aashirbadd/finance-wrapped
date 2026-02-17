@@ -29,6 +29,9 @@ function App() {
     localStorage.setItem('ledger', JSON.stringify(ledger));
   }, [ledger]);
 
+  // Selected date from chart interaction
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
   // Calculate totals
   const totalExpenses = ledger
     .filter(t => t.amount < 0)
@@ -74,6 +77,7 @@ function App() {
           onAdd={handleAddTransaction}
           onRemove={handleRemoveTransaction}
           onPdfSelect={handlePdfSelect}
+          selectedDate={selectedDate}
         />
       </div>
 
@@ -114,7 +118,7 @@ function App() {
 
         {/* Monthly Chart - takes remaining space */}
         <div className="flex-1 px-8 pb-8 min-h-0">
-          <MonthlyChart ledger={ledger} />
+          <MonthlyChart ledger={ledger} onDateSelect={setSelectedDate} />
         </div>
       </main>
     </div>

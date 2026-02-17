@@ -4,6 +4,7 @@ import type { Ledger } from '../types'
 
 interface MonthlyChartProps {
   ledger: Ledger
+  onDateSelect: (date: string) => void
 }
 
 interface DataPoint {
@@ -30,7 +31,7 @@ function formatDate(date: Date): string {
   return date.toISOString().split('T')[0]
 }
 
-export function MonthlyChart({ ledger }: MonthlyChartProps) {
+export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
   const { data, xAxisTicks, numMonths } = useMemo(() => {
     const result: DataPoint[] = []
     const ticks: { value: number; label: string }[] = []
@@ -164,7 +165,17 @@ export function MonthlyChart({ ledger }: MonthlyChartProps) {
       <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-4 shrink-0">Monthly Overview</h3>
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <AreaChart 
+            data={data} 
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            onClick={(event: any) => {
+              // Use activeIndex to look up the date from our data array
+              if (event && event.activeIndex !== undefined && data[event.activeIndex]) {
+                const clickedDataPoint = data[event.activeIndex]
+                onDateSelect(clickedDataPoint.date)
+              }
+            }}
+          >
             <defs>
               <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#4ade80" stopOpacity={0.3}/>
@@ -231,7 +242,7 @@ export function MonthlyChart({ ledger }: MonthlyChartProps) {
               activeDot={{ r: 6 }}
             />
             <Area 
-              type="monotone" 
+              type="linear" 
               dataKey="expenses" 
               name="Expenses" 
               stroke="#f87171" 

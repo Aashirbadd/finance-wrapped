@@ -11,9 +11,10 @@ interface SidebarProps {
   onAdd: (transaction: Transaction) => void
   onRemove: (id: string) => void
   onPdfSelect: (file: File) => void
+  selectedDate: string | null
 }
 
-export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove, onPdfSelect }: SidebarProps) {
+export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove, onPdfSelect, selectedDate }: SidebarProps) {
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
     
@@ -55,7 +56,7 @@ export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemov
       <PdfDropZone onFileSelect={onPdfSelect} />
 
       {/* Transaction List */}
-      <TransactionList ledger={ledger} onRemove={onRemove} />
+      <TransactionList ledger={ledger} onRemove={onRemove} selectedDate={selectedDate} />
       
       {/* Resize Handle */}
       <div
