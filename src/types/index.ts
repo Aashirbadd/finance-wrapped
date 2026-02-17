@@ -22,3 +22,5 @@ export interface Transaction {
 }
 
 export type Ledger = Transaction[];
+
+export type SummationMode = 'yearly' | 'monthly' | 'total';

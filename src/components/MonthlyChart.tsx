@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import type { Ledger } from '../types'
+import type { Ledger, SummationMode } from '../types'
 
 interface MonthlyChartProps {
   ledger: Ledger
   onDateSelect: (date: string) => void
+  summationMode: SummationMode
 }
 
 interface DataPoint {
@@ -32,7 +33,7 @@ function formatDate(date: Date): string {
   return date.toISOString().split('T')[0]
 }
 
-export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
+export function MonthlyChart({ ledger, onDateSelect, summationMode }: MonthlyChartProps) {
   const { data, xAxisTicks, numMonths } = useMemo(() => {
     const result: DataPoint[] = []
     const ticks: { value: number; label: string }[] = []
@@ -81,9 +82,10 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
       }
     })
 
-    // Calculate cumulative running totals across all months
+    // Calculate cumulative running totals
     let runningIncome = 0
     let runningExpenses = 0
+    let prevYear: number | null = null
 
     // Build data points for each month with running cumulative sums
     months.forEach((monthInfo, monthIdx) => {
@@ -92,6 +94,16 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
       
       // Add tick for month start
       ticks.push({ value: monthStartIndex, label: monthInfo.name })
+
+      // Reset running totals based on summation mode
+      if (summationMode === 'monthly') {
+        runningIncome = 0
+        runningExpenses = 0
+      } else if (summationMode === 'yearly' && prevYear !== null && monthInfo.year !== prevYear) {
+        runningIncome = 0
+        runningExpenses = 0
+      }
+      prevYear = monthInfo.year
 
       // Calculate position within the month (days are proportionally spaced)
       let monthEndIncome = 0
@@ -149,7 +161,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
     })
 
     return { data: result, xAxisTicks: ticks, numMonths }
-  }, [ledger])
+  }, [ledger, summationMode])
 
   // Handle empty data case
   if (!data || data.length === 0 || numMonths === 0) {
@@ -243,14 +255,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
               fill="url(#incomeGradient)" 
               strokeWidth={2}
               isAnimationActive={false}
-              dot={(props: any) => {
-                const { cx, cy, payload } = props
-                if (payload.isMonthTotal) {
-                  return <circle key={`dot-${cx}-${cy}`} cx={cx} cy={cy} r={4} fill="#4ade80" stroke="#22c55e" strokeWidth={2} />
-                }
-                return null
-              }}
-              activeDot={{ r: 6 }}
+              activeDot={{ r: 0 }}
             />
             <Area 
               type="linear" 
@@ -261,14 +266,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
               fill="url(#expensesGradient)" 
               strokeWidth={2}
               isAnimationActive={false}
-              dot={(props: any) => {
-                const { cx, cy, payload } = props
-                if (payload.isMonthTotal) {
-                  return <circle key={`dot-${cx}-${cy}`} cx={cx} cy={cy} r={4} fill="#f87171" stroke="#ef4444" strokeWidth={2} />
-                }
-                return null
-              }}
-              activeDot={{ r: 6 }}
+              activeDot={{ r: 0 }}
             />
             <Area 
               type="monotone" 
@@ -280,6 +278,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
               strokeWidth={2}
               isAnimationActive={false}
               dot={false}
+              activeDot={{ r: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>

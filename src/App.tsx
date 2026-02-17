@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import SidebarButton from "./components/SidebarButton";
 import { useSidebar } from "./hooks/useSidebar";
-import type { Ledger, Transaction } from "./types";
+import type { Ledger, Transaction, SummationMode } from "./types";
 import { DUMMY_LEDGER } from "./components/Sidebar/dummyData";
 import { MonthlyChart } from "./components/MonthlyChart";
 
@@ -31,6 +31,9 @@ function App() {
 
   // Selected date from chart interaction
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  // Summation mode for chart
+  const [summationMode, setSummationMode] = useState<SummationMode>('total');
 
   // Calculate totals
   const totalExpenses = ledger
@@ -90,6 +93,21 @@ function App() {
               onClick={toggleCollapse} 
             />
             <h1 className="m-0 font-bold">Finance Visualizer</h1>
+            <div className="ml-auto flex items-center gap-1 bg-slate-800/50 rounded-lg p-1">
+              {(['yearly', 'monthly', 'total'] as SummationMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setSummationMode(mode)}
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all capitalize ${
+                    summationMode === mode
+                      ? 'bg-blue-500/20 text-blue-400 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-300'
+                  }`}
+                >
+                  {mode}
+                </button>
+              ))}
+            </div>
           </div>
           
           {/* Summary Cards */}
@@ -118,7 +136,7 @@ function App() {
 
         {/* Monthly Chart - takes remaining space */}
         <div className="flex-1 px-8 pb-8 min-h-0">
-          <MonthlyChart ledger={ledger} onDateSelect={setSelectedDate} />
+          <MonthlyChart ledger={ledger} onDateSelect={setSelectedDate} summationMode={summationMode} />
         </div>
       </main>
     </div>
