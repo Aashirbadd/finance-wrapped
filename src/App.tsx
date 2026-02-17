@@ -4,6 +4,7 @@ import SidebarButton from "./components/SidebarButton";
 import { useSidebar } from "./hooks/useSidebar";
 import type { Ledger, Transaction } from "./types";
 import { DUMMY_LEDGER } from "./components/Sidebar/dummyData";
+import { MonthlyChart } from "./components/MonthlyChart";
 
 function App() {
   const { 
@@ -76,8 +77,8 @@ function App() {
         />
       </div>
 
-      <main className="flex-1 h-screen overflow-hidden">
-        <div className="p-8">
+      <main className="flex-1 h-screen overflow-hidden flex flex-col">
+        <div className="p-8 shrink-0">
           {/* Title and Toggle Sidebar Button on same line */}
           <div className="flex items-center gap-2 mb-4">
             <SidebarButton 
@@ -88,7 +89,7 @@ function App() {
           </div>
           
           {/* Summary Cards */}
-          <div className="grid grid-cols-3 gap-4 mt-8">
+          <div className="grid grid-cols-3 gap-4">
             {/* Total Expenses */}
             <div className="card-main">
               <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-2">Total Expenses</h3>
@@ -109,6 +110,11 @@ function App() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Monthly Chart - takes remaining space */}
+        <div className="flex-1 px-8 pb-8 min-h-0">
+          <MonthlyChart ledger={ledger} />
         </div>
       </main>
     </div>
