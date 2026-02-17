@@ -127,7 +127,7 @@ function App() {
             {/* Net Income */}
             <div className="card-main">
               <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-2">Net Income</h3>
-              <p className={`text-2xl font-bold ${netIncome >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <p className={`text-2xl font-bold ${netIncome >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
                 {formatCurrency(netIncome)}
               </p>
             </div>
