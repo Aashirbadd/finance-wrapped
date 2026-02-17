@@ -92,7 +92,7 @@ function App() {
               isCollapsed={isCollapsed} 
               onClick={toggleCollapse} 
             />
-            <h1 className="m-0 font-bold">Finance Visualizer</h1>
+            <h1 className="m-0 font-bold">Finance Wrapped</h1>
             <div className="ml-auto flex items-center gap-1 bg-slate-800/50 rounded-lg p-1">
               {(['yearly', 'monthly', 'total'] as SummationMode[]).map((mode) => (
                 <button
