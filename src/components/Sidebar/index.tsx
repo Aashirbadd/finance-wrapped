@@ -24,7 +24,7 @@ export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemov
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const diff = moveEvent.clientX - startX
       const percentageDiff = (diff / window.innerWidth) * 100
-      const newWidth = Math.max(35, Math.min(60, startWidth + percentageDiff))
+      const newWidth = Math.max(30, Math.min(60, startWidth + percentageDiff))
       onResize(newWidth)
     }
 

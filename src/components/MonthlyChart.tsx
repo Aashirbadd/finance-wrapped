@@ -232,6 +232,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
               fillOpacity={1} 
               fill="url(#incomeGradient)" 
               strokeWidth={2}
+              isAnimationActive={false}
               dot={(props: any) => {
                 const { cx, cy, payload } = props
                 if (payload.isMonthTotal) {
@@ -249,6 +250,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
               fillOpacity={1} 
               fill="url(#expensesGradient)" 
               strokeWidth={2}
+              isAnimationActive={false}
               dot={(props: any) => {
                 const { cx, cy, payload } = props
                 if (payload.isMonthTotal) {
