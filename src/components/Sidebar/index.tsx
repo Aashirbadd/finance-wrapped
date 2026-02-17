@@ -2,6 +2,7 @@ import React from 'react'
 import type { Ledger, Transaction } from '../../types'
 import { AddTransaction } from './AddTransaction'
 import { TransactionList } from './TransactionList'
+import { PdfDropZone } from './PdfDropZone'
 
 interface SidebarProps {
   currentWidth: number
@@ -9,9 +10,10 @@ interface SidebarProps {
   ledger: Ledger
   onAdd: (transaction: Transaction) => void
   onRemove: (id: string) => void
+  onPdfSelect: (file: File) => void
 }
 
-export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove }: SidebarProps) {
+export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove, onPdfSelect }: SidebarProps) {
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
     
@@ -48,6 +50,9 @@ export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemov
 
       {/* Add New Transaction */}
       <AddTransaction onAdd={onAdd} />
+
+      {/* PDF Drop Zone */}
+      <PdfDropZone onFileSelect={onPdfSelect} />
 
       {/* Transaction List */}
       <TransactionList ledger={ledger} onRemove={onRemove} />

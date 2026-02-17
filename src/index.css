@@ -42,7 +42,7 @@
 @layer components {
   /* The primary container for dashboard modules */
   .card-main {
-    @apply bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-xl;
+    @apply bg-[var(--color-surface)] rounded-2xl p-6 shadow-xl;
   }
 
   /* Nav items for the sidebar */

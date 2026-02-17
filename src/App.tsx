@@ -47,6 +47,11 @@ function App() {
     setLedger(ledger.filter(t => t.id !== id));
   };
 
+  const handlePdfSelect = (file: File) => {
+    // For now, just log the file - we'll add OCR later
+    console.log('PDF selected:', file.name);
+  };
+
   const formatCurrency = (amount: number): string => {
     return amount.toLocaleString('en-US', {
       style: 'currency',
@@ -67,6 +72,7 @@ function App() {
           ledger={ledger}
           onAdd={handleAddTransaction}
           onRemove={handleRemoveTransaction}
+          onPdfSelect={handlePdfSelect}
         />
       </div>
 
