@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { Transaction, Ledger } from '../types'
 
 interface SidebarProps {
@@ -12,7 +12,11 @@ const generateId = (): string => {
 };
 
 export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
-  const [ledger, setLedger] = useState<Ledger>([]);
+  // Load from localStorage or use empty array
+  const [ledger, setLedger] = useState<Ledger>(() => {
+    const saved = localStorage.getItem('ledger');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [newDate, setNewDate] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newAmount, setNewAmount] = useState('');
@@ -52,8 +56,8 @@ export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
       amount: parseFloat(newAmount),
     };
 
-    // Add new transaction at the TOP of the list
-    setLedger([newTransaction, ...ledger]);
+    // Add new transaction to the list (will be sorted by date)
+    setLedger([...ledger, newTransaction]);
 
     // Clear form fields
     setNewDate('');
@@ -65,6 +69,16 @@ export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
     setLedger(ledger.filter(t => t.id !== id));
   };
 
+  // Save to localStorage whenever ledger changes
+  useEffect(() => {
+    localStorage.setItem('ledger', JSON.stringify(ledger));
+  }, [ledger]);
+
+  // Sort ledger by date (newest first)
+  const sortedLedger = [...ledger].sort((a, b) => 
+    b.date.localeCompare(a.date)
+  );
+
   const formatAmount = (amount: number): string => {
     const prefix = amount >= 0 ? '+' : '';
     return `${prefix}${amount.toFixed(2)}`;
@@ -75,7 +89,7 @@ export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
       <h1 className="font-bold text-lg mb-4 shrink-0">Expense List</h1>
 
       {/* Header Row */}
-      <div className="grid grid-cols-[1fr_1.5fr_80px_40px] gap-2 mb-2 px-2 text-xs text-slate-400 font-medium uppercase shrink-0">
+      <div className="grid grid-cols-[135px_1.1fr_80px_40px] gap-2 mb-2 px-2 text-xs text-slate-400 font-medium uppercase shrink-0">
         <span>Date</span>
         <span>Description</span>
         <span>Amount</span>
@@ -83,7 +97,10 @@ export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
       </div>
 
       {/* Add New Transaction Row - at the TOP */}
-      <div className="grid grid-cols-[1fr_1.5fr_80px_40px] gap-2 mb-4 p-2 bg-[var(--color-surface-hover)] rounded-lg shrink-0">
+      <form 
+        onSubmit={(e) => { e.preventDefault(); handleAddTransaction(); }}
+        className="grid grid-cols-[130px_1fr_80px_40px] gap-2 mb-4 p-2 bg-[var(--color-surface-hover)] rounded-lg shrink-0"
+      >
         <input
           type="date"
           value={newDate}
@@ -105,20 +122,20 @@ export default function Sidebar({ currentWidth, onResize }: SidebarProps) {
           className="bg-transparent border border-[var(--color-border)] rounded px-2 py-1 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[var(--color-accent)]"
         />
         <button
-          onClick={handleAddTransaction}
+          type="submit"
           className="flex items-center justify-center w-8 h-8 bg-[var(--color-accent)] text-white rounded hover:opacity-90 transition-opacity"
           title="Add transaction"
         >
           +
         </button>
-      </div>
+      </form>
 
       {/* Transaction List */}
       <div className="flex-1 overflow-y-auto space-y-1 min-h-0">
-        {ledger.length === 0 ? (
+        {sortedLedger.length === 0 ? (
           <p className="text-slate-500 text-sm text-center py-4">No transactions yet</p>
         ) : (
-          ledger.map((transaction) => (
+          sortedLedger.map((transaction) => (
             <div
               key={transaction.id}
               className="grid grid-cols-[1fr_1.5fr_80px_40px] gap-2 p-2 rounded hover:bg-[var(--color-surface-hover)] transition-colors items-center"
