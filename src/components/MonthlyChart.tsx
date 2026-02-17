@@ -199,6 +199,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
               type="number"
               stroke="#94a3b8"
               fontSize={12}
+              fontFamily="Inter, system-ui, -apple-system, sans-serif"
               domain={[0, (numMonths - 1) * MONTH_RANGE + MONTH_RANGE]}
               ticks={xAxisTicks.map(t => t.value)}
               tickFormatter={(value) => {
@@ -209,6 +210,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
             <YAxis 
               stroke="#94a3b8"
               fontSize={12}
+              fontFamily="Inter, system-ui, -apple-system, sans-serif"
               tickFormatter={(value) => `$${value}`}
             />
             <Tooltip
@@ -216,8 +218,9 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
                 borderRadius: '8px',
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               }}
-              labelStyle={{ color: '#e2e8f0' }}
+              labelStyle={{ color: '#e2e8f0', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
               formatter={(value, name) => {
                 const label = name === 'Income' ? 'Income' : name === 'Expenses' ? 'Expenses' : 'Net Income'
                 return [`$${Number(value).toFixed(2)}`, label]
@@ -230,7 +233,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
                 return ''
               }}
             />
-            <Legend />
+            <Legend wrapperStyle={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }} />
             <Area 
               type="monotone" 
               dataKey="income" 
