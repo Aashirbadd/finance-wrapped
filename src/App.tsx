@@ -18,7 +18,7 @@ function App() {
     
     <div 
       className={`shrink-0 overflow-hidden ${isTransitioning ? 'transition-all duration-300' : ''}`}
-      style={{ width: `${sidebarWidth}%` }}
+      style={{ width: `${sidebarWidth}%`, minWidth: isCollapsed ? 0 : 498 }}
     >
       <Sidebar 
         currentWidth={sidebarWidth} 

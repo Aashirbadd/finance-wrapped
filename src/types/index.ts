@@ -20,3 +20,5 @@ export interface Transaction {
   /** Optional: Origin file name (e.g., "bank_statement_jan.pdf") */
   source?: string;
 }
+
+export type Ledger = Transaction[];
