@@ -16,6 +16,7 @@ interface DataPoint {
   isMonthTotal: boolean
   income: number
   expenses: number
+  netIncome: number
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -122,7 +123,8 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
             monthIndex: monthIdx,
             isMonthTotal: false,
             income: runningIncome,
-            expenses: runningExpenses
+            expenses: runningExpenses,
+            netIncome: runningIncome - runningExpenses
           })
         }
       }
@@ -140,7 +142,8 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
           monthIndex: monthIdx,
           isMonthTotal: true,
           income: runningIncome,
-          expenses: runningExpenses
+          expenses: runningExpenses,
+          netIncome: runningIncome - runningExpenses
         })
       }
     })
@@ -185,6 +188,10 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
                 <stop offset="5%" stopColor="#f87171" stopOpacity={0.3}/>
                 <stop offset="95%" stopColor="#f87171" stopOpacity={0}/>
               </linearGradient>
+              <linearGradient id="netIncomeGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+              </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
             <XAxis 
@@ -212,7 +219,7 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
               }}
               labelStyle={{ color: '#e2e8f0' }}
               formatter={(value, name) => {
-                const label = name === 'Income' ? 'Income' : 'Expenses'
+                const label = name === 'Income' ? 'Income' : name === 'Expenses' ? 'Expenses' : 'Net Income'
                 return [`$${Number(value).toFixed(2)}`, label]
               }}
               labelFormatter={(_, payload) => {
@@ -259,6 +266,18 @@ export function MonthlyChart({ ledger, onDateSelect }: MonthlyChartProps) {
                 return null
               }}
               activeDot={{ r: 6 }}
+            />
+            <Area 
+              type="monotone" 
+              dataKey="netIncome" 
+              name="Net Income" 
+              stroke="#8b5cf6" 
+              fillOpacity={1} 
+              fill="url(#netIncomeGradient)" 
+              strokeWidth={2}
+              isAnimationActive={false}
+              dot={false}
+             
             />
           </AreaChart>
         </ResponsiveContainer>
