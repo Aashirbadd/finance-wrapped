@@ -22,7 +22,7 @@ function App() {
     if (saved) {
       return JSON.parse(saved);
     }
-    return DUMMY_LEDGER;
+    return [];
   });
 
   // Save to localStorage whenever ledger changes
@@ -55,9 +55,8 @@ function App() {
     setLedger(ledger.filter(t => t.id !== id));
   };
 
-  const handleCsvSelect = (content: string, fileName: string) => {
+  const handleCsvSelect = (content: string) => {
     const transactions = parseCSV(content);
-    console.log(`Parsed ${transactions.length} transactions from ${fileName}`);
     setLedger([...ledger, ...transactions]);
   };
 
