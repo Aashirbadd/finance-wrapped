@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import dayjs from "dayjs";
 import Sidebar from "./components/Sidebar";
 import SidebarButton from "./components/SidebarButton";
 import { useSidebar } from "./hooks/useSidebar";
@@ -45,6 +46,84 @@ function App() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   const netIncome = totalIncome - totalExpenses;
+
+  // Calculate monthly and yearly averages by summing each month/year first, then averaging
+  const { avgMonthlyExpenses, avgMonthlyIncome, avgMonthlyNet, avgYearlyExpenses, avgYearlyIncome, avgYearlyNet } = useMemo(() => {
+    if (ledger.length === 0) {
+      return {
+        avgMonthlyExpenses: 0, avgMonthlyIncome: 0, avgMonthlyNet: 0,
+        avgYearlyExpenses: 0, avgYearlyIncome: 0, avgYearlyNet: 0
+      };
+    }
+
+    // Group by month (YYYY-MM)
+    const monthlyData: Record<string, { income: number; expenses: number }> = {};
+    // Group by year (YYYY)
+    const yearlyData: Record<string, { income: number; expenses: number }> = {};
+
+    ledger.forEach((transaction) => {
+      const date = dayjs(transaction.date);
+      const monthKey = date.format('YYYY-MM');
+      const yearKey = date.format('YYYY');
+      
+      if (!monthlyData[monthKey]) monthlyData[monthKey] = { income: 0, expenses: 0 };
+      if (!yearlyData[yearKey]) yearlyData[yearKey] = { income: 0, expenses: 0 };
+      
+      if (transaction.amount > 0) {
+        monthlyData[monthKey].income += transaction.amount;
+        yearlyData[yearKey].income += transaction.amount;
+      } else {
+        monthlyData[monthKey].expenses += Math.abs(transaction.amount);
+        yearlyData[yearKey].expenses += Math.abs(transaction.amount);
+      }
+    });
+
+    // Calculate average from monthly sums
+    const monthCount = Object.keys(monthlyData).length;
+    const monthSums = Object.values(monthlyData);
+    const avgMonthlyExpenses = monthSums.reduce((sum, m) => sum + m.expenses, 0) / monthCount;
+    const avgMonthlyIncome = monthSums.reduce((sum, m) => sum + m.income, 0) / monthCount;
+    const avgMonthlyNet = avgMonthlyIncome - avgMonthlyExpenses;
+
+    // Calculate average from yearly sums
+    const yearCount = Object.keys(yearlyData).length;
+    const yearSums = Object.values(yearlyData);
+    const avgYearlyExpenses = yearSums.reduce((sum, y) => sum + y.expenses, 0) / yearCount;
+    const avgYearlyIncome = yearSums.reduce((sum, y) => sum + y.income, 0) / yearCount;
+    const avgYearlyNet = avgYearlyIncome - avgYearlyExpenses;
+
+    return {
+      avgMonthlyExpenses, avgMonthlyIncome, avgMonthlyNet,
+      avgYearlyExpenses, avgYearlyIncome, avgYearlyNet
+    };
+  }, [ledger]);
+
+  // Calculate display values based on summation mode
+  const { displayExpenses, displayIncome, displayNet, labelPrefix } = useMemo(() => {
+    let exp: number, inc: number, net: number, prefix: string;
+    
+    switch (summationMode) {
+      case 'monthly':
+        exp = avgMonthlyExpenses;
+        inc = avgMonthlyIncome;
+        net = avgMonthlyNet;
+        prefix = 'Avg Monthly';
+        break;
+      case 'yearly':
+        exp = avgYearlyExpenses;
+        inc = avgYearlyIncome;
+        net = avgYearlyNet;
+        prefix = 'Avg Yearly';
+        break;
+      default:
+        exp = totalExpenses;
+        inc = totalIncome;
+        net = netIncome;
+        prefix = 'Total';
+    }
+    
+    return { displayExpenses: exp, displayIncome: inc, displayNet: net, labelPrefix: prefix };
+  }, [summationMode, avgMonthlyExpenses, avgMonthlyIncome, avgMonthlyNet, avgYearlyExpenses, avgYearlyIncome, avgYearlyNet, totalExpenses, totalIncome, netIncome]);
 
   const handleAddTransaction = (transaction: Transaction | Transaction[]) => {
     if (Array.isArray(transaction)) {
@@ -126,21 +205,21 @@ function App() {
           <div className="grid grid-cols-3 gap-4">
             {/* Total Expenses */}
             <div className="card-main">
-              <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-2">Total Expenses</h3>
-              <p className="text-2xl font-bold text-red-400">{formatCurrency(totalExpenses)}</p>
+              <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-2">{labelPrefix} Expenses</h3>
+              <p className="text-2xl font-bold text-red-400">{formatCurrency(displayExpenses)}</p>
             </div>
 
             {/* Total Income */}
             <div className="card-main">
-              <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-2">Total Income</h3>
-              <p className="text-2xl font-bold text-green-400">{formatCurrency(totalIncome)}</p>
+              <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-2">{labelPrefix} Income</h3>
+              <p className="text-2xl font-bold text-green-400">{formatCurrency(displayIncome)}</p>
             </div>
 
             {/* Net Income */}
             <div className="card-main">
-              <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-2">Net Income</h3>
-              <p className={`text-2xl font-bold ${netIncome >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
-                {formatCurrency(netIncome)}
+              <h3 className="text-xs uppercase tracking-wider text-slate-400 mb-2">{labelPrefix} Net Income</h3>
+              <p className={`text-2xl font-bold ${displayNet >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
+                {formatCurrency(displayNet)}
               </p>
             </div>
           </div>
