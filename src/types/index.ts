@@ -24,3 +24,10 @@ export interface Transaction {
 export type Ledger = Transaction[];
 
 export type SummationMode = 'yearly' | 'monthly' | 'total';
+
+export type RecurringFrequency = 'weekly' | 'bi-weekly' | 'monthly';
+
+export interface RecurringConfig {
+  frequency: RecurringFrequency;
+  periods: number; // Number of periods to generate
+}

@@ -3,7 +3,6 @@ import Sidebar from "./components/Sidebar";
 import SidebarButton from "./components/SidebarButton";
 import { useSidebar } from "./hooks/useSidebar";
 import type { Ledger, Transaction, SummationMode } from "./types";
-import { DUMMY_LEDGER } from "./components/Sidebar/dummyData";
 import { MonthlyChart } from "./components/MonthlyChart";
 import { parseCSV } from "./lib/csvProcessor";
 
@@ -47,8 +46,12 @@ function App() {
 
   const netIncome = totalIncome - totalExpenses;
 
-  const handleAddTransaction = (transaction: Transaction) => {
-    setLedger([...ledger, transaction]);
+  const handleAddTransaction = (transaction: Transaction | Transaction[]) => {
+    if (Array.isArray(transaction)) {
+      setLedger([...ledger, ...transaction]);
+    } else {
+      setLedger([...ledger, transaction]);
+    }
   };
 
   const handleRemoveTransaction = (id: string) => {

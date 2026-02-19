@@ -8,7 +8,7 @@ interface SidebarProps {
   currentWidth: number
   onResize: (newWidth: number) => void
   ledger: Ledger
-  onAdd: (transaction: Transaction) => void
+  onAdd: (transaction: Transaction | Transaction[]) => void
   onRemove: (id: string) => void
   onCsvSelect: (contents: string[]) => void
   selectedDate: string | null
@@ -49,14 +49,6 @@ export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemov
   return (
     <div className="relative h-screen py-8 px-4 bg-[var(--color-surface)] flex flex-col overflow-hidden">
       <h1 className="font-bold text-lg mb-4 shrink-0">Expense List</h1>
-
-      {/* Header Row */}
-      <div className="grid grid-cols-[135px_1.1fr_80px_40px] gap-2 mb-2 px-2 text-xs text-slate-400 font-medium uppercase shrink-0">
-        <span>Date</span>
-        <span>Description</span>
-        <span>Amount</span>
-        <span></span>
-      </div>
 
       {/* Add New Transaction */}
       <AddTransaction onAdd={onAdd} />
