@@ -28,8 +28,13 @@ function App() {
     return 'clear';
   });
 
-  // User's ledger (stored in localStorage)
+  // User's ledger (stored in localStorage, or DUMMY_LEDGER if in demo mode)
   const [userLedger, setUserLedger] = useState<Ledger>(() => {
+    const savedMode = localStorage.getItem('dataMode');
+    if (savedMode === 'demo') {
+      // If demo mode, load dummy data
+      return [...DUMMY_LEDGER];
+    }
     const saved = localStorage.getItem('ledger');
     if (saved) {
       return JSON.parse(saved);
@@ -44,8 +49,8 @@ function App() {
     }
   }, [userLedger, dataMode]);
 
-  // Single source of truth: effective ledger
-  const ledger = dataMode === 'demo' ? DUMMY_LEDGER : userLedger;
+  // Single source of truth: effective ledger (always use userLedger, which gets populated differently based on mode)
+  const ledger = userLedger;
 
   // Selected date from chart interaction
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -81,14 +86,20 @@ function App() {
         showToast('Data cleared', 'success');
         setConfirmDialog(null);
       });
+    } else if (mode === 'demo') {
+      // Switch to demo mode - load fresh dummy data
+      setDataMode('demo');
+      localStorage.setItem('dataMode', 'demo');
+      setUserLedger([...DUMMY_LEDGER]);
     } else {
-      setDataMode(mode);
-      localStorage.setItem('dataMode', mode);
-      if (mode === 'user') {
-        const saved = localStorage.getItem('ledger');
-        if (saved) {
-          setUserLedger(JSON.parse(saved));
-        }
+      // User mode - load from localStorage
+      setDataMode('user');
+      localStorage.setItem('dataMode', 'user');
+      const saved = localStorage.getItem('ledger');
+      if (saved) {
+        setUserLedger(JSON.parse(saved));
+      } else {
+        setUserLedger([]);
       }
     }
   };
