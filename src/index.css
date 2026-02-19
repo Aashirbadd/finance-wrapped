@@ -21,6 +21,11 @@
     @apply text-slate-200 antialiased;
   }
 
+  /* Global form elements inherit font */
+  input, button, select, textarea {
+    @apply font-sans;
+  }
+
   /* Global Typography */
   h1 {
     @apply text-4xl font-bold tracking-tight text-white mb-4;

@@ -14,6 +14,8 @@ export function AddTransaction({ onAdd }: AddTransactionProps) {
   const [frequency, setFrequency] = useState<RecurringFrequency>('monthly')
   const [periods, setPeriods] = useState('')
 
+  const isSubmitable = date && description && amount && (!isRecurring || (isRecurring && periods))
+
   const resetForm = () => {
     setDate('')
     setDescription('')
@@ -76,21 +78,21 @@ export function AddTransaction({ onAdd }: AddTransactionProps) {
   return (
     <form onSubmit={handleSubmit} className="mb-4">
       {/* Header Row */}
-      <div className="grid grid-cols-[135px_1.1fr_80px_70px] gap-2 mb-2 px-2 text-xs text-slate-400 font-medium uppercase shrink-0">
+      <div className="grid grid-cols-[135px_1.1fr_80px_40px] gap-2 mb-2 px-2 text-xs text-slate-400 font-medium uppercase shrink-0">
         <span>Date</span>
         <span>Description</span>
         <span>Amount</span>
         <button
           type="button"
           onClick={() => setIsRecurring(!isRecurring)}
-          className={`text-center px-1 py-1 rounded transition-all bg-[var(--color-surface-hover)] ${
+          className={`flex items-center justify-center p-1 rounded transition-all bg-[var(--color-surface-hover)] ${
             isRecurring 
               ? 'bg-blue-500/20 text-blue-400 shadow-sm'
               : 'text-slate-400 hover:text-slate-300'
-              
           }`}
+          title="Recurring transaction"
         >
-          Recurring?
+          ↻
         </button>
       </div>
       <div className="grid grid-cols-[130px_1fr_80px_40px] gap-2 p-2 bg-[var(--color-surface-hover)] rounded-lg">
@@ -116,7 +118,12 @@ export function AddTransaction({ onAdd }: AddTransactionProps) {
         />
         <button
           type="submit"
-          className="flex items-center justify-center w-8 h-8 bg-[var(--color-accent)] text-white rounded hover:opacity-90 transition-opacity"
+          disabled={!isSubmitable}
+          className={`flex items-center justify-center w-8 h-8 rounded transition-opacity ${
+            isSubmitable 
+              ? 'bg-[var(--color-accent)] text-white hover:opacity-90 cursor-pointer' 
+              : 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+          }`}
           title="Add transaction"
         >
           +
