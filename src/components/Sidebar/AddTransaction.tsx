@@ -25,11 +25,12 @@ export function AddTransaction({ onAdd }: AddTransactionProps) {
     setPeriods('')
   }
 
-  const createTransaction = (transactionDate: dayjs.Dayjs): Transaction => ({
+  const createTransaction = (transactionDate: dayjs.Dayjs, groupId?: string): Transaction => ({
     id: Date.now().toString(36) + Math.random().toString(36).substr(2),
     date: transactionDate.format('YYYY-MM-DD'),
     description,
     amount: parseFloat(amount),
+    recurringGroupId: groupId,
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -45,9 +46,10 @@ export function AddTransaction({ onAdd }: AddTransactionProps) {
       const numPeriods = parseInt(periods)
       const transactions: Transaction[] = []
       let currentDate = baseDate
+      const groupId = Date.now().toString(36)
 
       for (let i = 0; i < numPeriods; i++) {
-        transactions.push(createTransaction(currentDate))
+        transactions.push(createTransaction(currentDate, groupId))
         
         if (frequency === 'weekly') {
           currentDate = currentDate.add(1, 'week')

@@ -55,7 +55,15 @@ function App() {
   };
 
   const handleRemoveTransaction = (id: string) => {
-    setLedger(ledger.filter(t => t.id !== id));
+    // Find the transaction being deleted
+    const transactionToDelete = ledger.find(t => t.id === id);
+    
+    // If it has a recurringGroupId, delete all transactions with the same group ID
+    if (transactionToDelete?.recurringGroupId) {
+      setLedger(ledger.filter(t => t.recurringGroupId !== transactionToDelete.recurringGroupId));
+    } else {
+      setLedger(ledger.filter(t => t.id !== id));
+    }
   };
 
   const handleCsvSelect = (contents: string[]) => {

@@ -12,6 +12,25 @@ const formatAmount = (amount: number): string => {
   return `${prefix}${amount.toFixed(2)}`
 }
 
+// Generate a consistent color from a string (group ID)
+const getColorFromString = (str: string): string => {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const colors = [
+    'text-cyan-400',
+    'text-violet-400',
+    'text-emerald-400',
+    'text-amber-400',
+    'text-fuchsia-400',
+    'text-sky-400',
+    'text-lime-400',
+    'text-rose-400',
+  ]
+  return colors[Math.abs(hash) % colors.length]
+}
+
 export function TransactionList({ ledger, onRemove, selectedDate }: TransactionListProps) {
   // Sort ledger by date (newest first)
   const sortedLedger = [...ledger].sort((a, b) => 
@@ -53,7 +72,14 @@ export function TransactionList({ ledger, onRemove, selectedDate }: TransactionL
               }`}
             >
               <span className="text-sm text-slate-300 truncate">{transaction.date}</span>
-              <span className="text-sm text-slate-300 truncate">{transaction.description}</span>
+              <div className="flex items-center gap-1 truncate">
+                {transaction.recurringGroupId && (
+                  <span className={`text-xs ${getColorFromString(transaction.recurringGroupId)}`} title="Recurring">
+                    ↻
+                  </span>
+                )}
+                <span className="text-sm text-slate-300 truncate">{transaction.description}</span>
+              </div>
               <span className={`text-sm font-medium ${transaction.amount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                 {formatAmount(transaction.amount)}
               </span>

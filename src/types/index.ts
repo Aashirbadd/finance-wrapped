@@ -19,6 +19,9 @@ export interface Transaction {
   
   /** Optional: Origin file name (e.g., "bank_statement_jan.pdf") */
   source?: string;
+  
+  /** Optional: Group ID for recurring transactions - all transactions in a series share the same ID */
+  recurringGroupId?: string;
 }
 
 export type Ledger = Transaction[];
