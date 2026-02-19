@@ -55,9 +55,9 @@ function App() {
     setLedger(ledger.filter(t => t.id !== id));
   };
 
-  const handleCsvSelect = (content: string) => {
-    const transactions = parseCSV(content);
-    setLedger([...ledger, ...transactions]);
+  const handleCsvSelect = (contents: string[]) => {
+    const allTransactions = contents.flatMap(content => parseCSV(content))
+    setLedger([...ledger, ...allTransactions])
   };
 
   const formatCurrency = (amount: number): string => {

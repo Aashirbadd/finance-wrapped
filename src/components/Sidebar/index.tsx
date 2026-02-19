@@ -10,15 +10,15 @@ interface SidebarProps {
   ledger: Ledger
   onAdd: (transaction: Transaction) => void
   onRemove: (id: string) => void
-  onCsvSelect: (content: string) => void
+  onCsvSelect: (contents: string[]) => void
   selectedDate: string | null
 }
 
 export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove, onCsvSelect, selectedDate }: SidebarProps) {
-  const handleCsvSelect = async (file: File) => {
+  const handleCsvSelect = async (files: File[]) => {
     try {
-      const content = await file.text()
-      onCsvSelect(content)
+      const contents = await Promise.all(files.map(file => file.text()))
+      onCsvSelect(contents)
     } catch (error) {
       console.error('Error reading CSV:', error)
     }
