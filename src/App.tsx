@@ -3,9 +3,12 @@ import dayjs from "dayjs";
 import Sidebar from "./components/Sidebar";
 import SidebarButton from "./components/SidebarButton";
 import { useSidebar } from "./hooks/useSidebar";
-import type { Ledger, Transaction, SummationMode } from "./types";
+import type { Ledger, Transaction, SummationMode, DataMode } from "./types";
 import { MonthlyChart } from "./components/MonthlyChart";
 import { parseCSV } from "./lib/csvProcessor";
+import { DUMMY_LEDGER } from "./components/Sidebar/dummyData";
+import { Toast, type ToastType } from "./components/Toast";
+import { ConfirmationDialog } from "./components/ConfirmationDialog";
 
 function App() {
   const { 
@@ -16,8 +19,17 @@ function App() {
     toggleCollapse 
   } = useSidebar(20);
 
-  // Load from localStorage or use dummy data
-  const [ledger, setLedger] = useState<Ledger>(() => {
+  // Data mode: demo (shows dummy data), user (user's own data), clear (empty)
+  const [dataMode, setDataMode] = useState<DataMode>(() => {
+    const saved = localStorage.getItem('dataMode');
+    if (saved && ['demo', 'user', 'clear'].includes(saved)) {
+      return saved as DataMode;
+    }
+    return 'clear';
+  });
+
+  // User's ledger (stored in localStorage)
+  const [userLedger, setUserLedger] = useState<Ledger>(() => {
     const saved = localStorage.getItem('ledger');
     if (saved) {
       return JSON.parse(saved);
@@ -25,16 +37,61 @@ function App() {
     return [];
   });
 
-  // Save to localStorage whenever ledger changes
+  // Save to localStorage whenever userLedger changes (only in non-demo mode)
   useEffect(() => {
-    localStorage.setItem('ledger', JSON.stringify(ledger));
-  }, [ledger]);
+    if (dataMode !== 'demo') {
+      localStorage.setItem('ledger', JSON.stringify(userLedger));
+    }
+  }, [userLedger, dataMode]);
+
+  // Single source of truth: effective ledger
+  const ledger = dataMode === 'demo' ? DUMMY_LEDGER : userLedger;
 
   // Selected date from chart interaction
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // Summation mode for chart
   const [summationMode, setSummationMode] = useState<SummationMode>('total');
+
+  // Toast state
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState<{ message: string; onConfirm: () => void } | null>(null);
+
+  // Show toast helper
+  const showToast = (message: string, type: ToastType = 'info') => {
+    setToast({ message, type });
+  };
+
+  // Show confirmation dialog helper
+  const showConfirmDialog = (message: string, onConfirm: () => void) => {
+    setConfirmDialog({ message, onConfirm });
+  };
+
+  // Handle data mode changes
+  const handleDataModeChange = (mode: DataMode) => {
+    if (mode === 'clear') {
+      showConfirmDialog('Are you sure you want to clear your data? This cannot be undone.', () => {
+        // Clear data and switch to user mode (shows empty state)
+        setUserLedger([]);
+        localStorage.removeItem('ledger');
+        setDataMode('user');
+        localStorage.setItem('dataMode', 'user');
+        showToast('Data cleared', 'success');
+        setConfirmDialog(null);
+      });
+    } else {
+      setDataMode(mode);
+      localStorage.setItem('dataMode', mode);
+      if (mode === 'user') {
+        const saved = localStorage.getItem('ledger');
+        if (saved) {
+          setUserLedger(JSON.parse(saved));
+        }
+      }
+    }
+  };
 
   // Calculate totals
   const totalExpenses = ledger
@@ -127,27 +184,27 @@ function App() {
 
   const handleAddTransaction = (transaction: Transaction | Transaction[]) => {
     if (Array.isArray(transaction)) {
-      setLedger([...ledger, ...transaction]);
+      setUserLedger([...userLedger, ...transaction]);
     } else {
-      setLedger([...ledger, transaction]);
+      setUserLedger([...userLedger, transaction]);
     }
   };
 
   const handleRemoveTransaction = (id: string) => {
     // Find the transaction being deleted
-    const transactionToDelete = ledger.find(t => t.id === id);
+    const transactionToDelete = userLedger.find(t => t.id === id);
     
     // If it has a recurringGroupId, delete all transactions with the same group ID
     if (transactionToDelete?.recurringGroupId) {
-      setLedger(ledger.filter(t => t.recurringGroupId !== transactionToDelete.recurringGroupId));
+      setUserLedger(userLedger.filter(t => t.recurringGroupId !== transactionToDelete.recurringGroupId));
     } else {
-      setLedger(ledger.filter(t => t.id !== id));
+      setUserLedger(userLedger.filter(t => t.id !== id));
     }
   };
 
   const handleCsvSelect = (contents: string[]) => {
     const allTransactions = contents.flatMap(content => parseCSV(content))
-    setLedger([...ledger, ...allTransactions])
+    setUserLedger([...userLedger, ...allTransactions])
   };
 
   const formatCurrency = (amount: number): string => {
@@ -158,7 +215,26 @@ function App() {
   };
 
   return (
-    <div className="flex w-screen min-h-screen"> 
+    <>
+      {/* Toast notification */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
+
+      {/* Confirmation dialog */}
+      {confirmDialog && (
+        <ConfirmationDialog 
+          message={confirmDialog.message}
+          onConfirm={confirmDialog.onConfirm}
+          onCancel={() => setConfirmDialog(null)}
+        />
+      )}
+
+      <div className="flex w-screen min-h-screen">
     
       <div 
         className={`shrink-0 overflow-hidden h-screen ${isTransitioning ? 'transition-all duration-300' : ''}`}
@@ -172,6 +248,9 @@ function App() {
           onRemove={handleRemoveTransaction}
           onCsvSelect={handleCsvSelect}
           selectedDate={selectedDate}
+          dataMode={dataMode}
+          onDataModeChange={handleDataModeChange}
+          showToast={showToast}
         />
       </div>
 
@@ -231,6 +310,7 @@ function App() {
         </div>
       </main>
     </div>
+    </>
   );
 }
 

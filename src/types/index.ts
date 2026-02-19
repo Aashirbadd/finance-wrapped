@@ -28,6 +28,8 @@ export type Ledger = Transaction[];
 
 export type SummationMode = 'yearly' | 'monthly' | 'total';
 
+export type DataMode = 'demo' | 'user' | 'clear';
+
 export type RecurringFrequency = 'weekly' | 'bi-weekly' | 'monthly';
 
 export interface RecurringConfig {
