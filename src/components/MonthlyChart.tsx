@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import type { Ledger, SummationMode } from '../types'
 
@@ -34,6 +34,8 @@ function formatDate(date: Date): string {
 }
 
 export function MonthlyChart({ ledger, onDateSelect, summationMode }: MonthlyChartProps) {
+  const [hiddenAreas, setHiddenAreas] = useState<string[]>([])
+
   const { data, xAxisTicks, numMonths } = useMemo(() => {
     const result: DataPoint[] = []
     const ticks: { value: number; label: string }[] = []
@@ -245,7 +247,18 @@ export function MonthlyChart({ ledger, onDateSelect, summationMode }: MonthlyCha
                 return ''
               }}
             />
-            <Legend wrapperStyle={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }} />
+            <Legend 
+              wrapperStyle={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
+              onClick={(e) => {
+                const dataKey = e.dataKey
+                if (!dataKey) return
+                setHiddenAreas((prev: string[]) => 
+                  prev.includes(dataKey as string)
+                    ? prev.filter((k: string) => k !== dataKey)
+                    : [...prev, dataKey as string]
+                )
+              }}
+            />
             <Area 
               type="monotone" 
               dataKey="income" 
@@ -256,6 +269,7 @@ export function MonthlyChart({ ledger, onDateSelect, summationMode }: MonthlyCha
               strokeWidth={2}
               isAnimationActive={false}
               activeDot={{ r: 0 }}
+              hide={hiddenAreas.includes('income')}
             />
             <Area 
               type="linear" 
@@ -267,6 +281,7 @@ export function MonthlyChart({ ledger, onDateSelect, summationMode }: MonthlyCha
               strokeWidth={2}
               isAnimationActive={false}
               activeDot={{ r: 0 }}
+              hide={hiddenAreas.includes('expenses')}
             />
             <Area 
               type="monotone" 
@@ -279,6 +294,7 @@ export function MonthlyChart({ ledger, onDateSelect, summationMode }: MonthlyCha
               isAnimationActive={false}
               dot={false}
               activeDot={{ r: 0 }}
+              hide={hiddenAreas.includes('netIncome')}
             />
           </AreaChart>
         </ResponsiveContainer>
