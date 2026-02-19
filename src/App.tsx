@@ -5,6 +5,7 @@ import { useSidebar } from "./hooks/useSidebar";
 import type { Ledger, Transaction, SummationMode } from "./types";
 import { DUMMY_LEDGER } from "./components/Sidebar/dummyData";
 import { MonthlyChart } from "./components/MonthlyChart";
+import { parseCSV } from "./lib/csvProcessor";
 
 function App() {
   const { 
@@ -54,9 +55,10 @@ function App() {
     setLedger(ledger.filter(t => t.id !== id));
   };
 
-  const handlePdfSelect = (file: File) => {
-    // For now, just log the file - we'll add OCR later
-    console.log('PDF selected:', file.name);
+  const handleCsvSelect = (content: string, fileName: string) => {
+    const transactions = parseCSV(content);
+    console.log(`Parsed ${transactions.length} transactions from ${fileName}`);
+    setLedger([...ledger, ...transactions]);
   };
 
   const formatCurrency = (amount: number): string => {
@@ -79,7 +81,7 @@ function App() {
           ledger={ledger}
           onAdd={handleAddTransaction}
           onRemove={handleRemoveTransaction}
-          onPdfSelect={handlePdfSelect}
+          onCsvSelect={handleCsvSelect}
           selectedDate={selectedDate}
         />
       </div>

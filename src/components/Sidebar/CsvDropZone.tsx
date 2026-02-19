@@ -1,10 +1,10 @@
 import { useState, useRef } from 'react'
 
-interface PdfDropZoneProps {
+interface CsvDropZoneProps {
   onFileSelect: (file: File) => void
 }
 
-export function PdfDropZone({ onFileSelect }: PdfDropZoneProps) {
+export function CsvDropZone({ onFileSelect }: CsvDropZoneProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -24,7 +24,7 @@ export function PdfDropZone({ onFileSelect }: PdfDropZoneProps) {
     setIsDragging(false)
 
     const files = e.dataTransfer.files
-    if (files.length > 0 && files[0].type === 'application/pdf') {
+    if (files.length > 0 && (files[0].type === 'text/csv' || files[0].name.endsWith('.csv'))) {
       const file = files[0]
       setFileName(file.name)
       onFileSelect(file)
@@ -39,7 +39,7 @@ export function PdfDropZone({ onFileSelect }: PdfDropZoneProps) {
     const files = e.target.files
     if (files && files.length > 0) {
       const file = files[0]
-      if (file.type === 'application/pdf') {
+      if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
         setFileName(file.name)
         onFileSelect(file)
       }
@@ -63,7 +63,7 @@ export function PdfDropZone({ onFileSelect }: PdfDropZoneProps) {
       <input
         ref={inputRef}
         type="file"
-        accept="application/pdf"
+        accept=".csv,text/csv"
         onChange={handleFileChange}
         className="hidden"
       />
@@ -81,7 +81,7 @@ export function PdfDropZone({ onFileSelect }: PdfDropZoneProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
           <p className="text-sm text-slate-400">
-            Drop PDF here or <span className="text-[var(--color-accent)]">click to browse</span>
+            Drop CSV here or <span className="text-[var(--color-accent)]">click to browse</span>
           </p>
         </>
       )}

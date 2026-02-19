@@ -2,7 +2,7 @@ import React from 'react'
 import type { Ledger, Transaction } from '../../types'
 import { AddTransaction } from './AddTransaction'
 import { TransactionList } from './TransactionList'
-import { PdfDropZone } from './PdfDropZone'
+import { CsvDropZone } from './CsvDropZone'
 
 interface SidebarProps {
   currentWidth: number
@@ -10,11 +10,21 @@ interface SidebarProps {
   ledger: Ledger
   onAdd: (transaction: Transaction) => void
   onRemove: (id: string) => void
-  onPdfSelect: (file: File) => void
+  onCsvSelect: (content: string, fileName: string) => void
   selectedDate: string | null
 }
 
-export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove, onPdfSelect, selectedDate }: SidebarProps) {
+export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove, onCsvSelect, selectedDate }: SidebarProps) {
+  const handleCsvSelect = async (file: File) => {
+    try {
+      const content = await file.text()
+      console.log('CSV content:', content)
+      onCsvSelect(content, file.name)
+    } catch (error) {
+      console.error('Error reading CSV:', error)
+    }
+  }
+
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
     
@@ -52,8 +62,8 @@ export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemov
       {/* Add New Transaction */}
       <AddTransaction onAdd={onAdd} />
 
-      {/* PDF Drop Zone */}
-      <PdfDropZone onFileSelect={onPdfSelect} />
+      {/* CSV Drop Zone */}
+      <CsvDropZone onFileSelect={handleCsvSelect} />
 
       {/* Transaction List */}
       <TransactionList ledger={ledger} onRemove={onRemove} selectedDate={selectedDate} />
