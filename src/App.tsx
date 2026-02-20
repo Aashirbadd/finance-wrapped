@@ -9,6 +9,7 @@ import { parseCSV } from "./lib/csvProcessor";
 import { DUMMY_LEDGER } from "./components/Sidebar/dummyData";
 import { Toast, type ToastType } from "./components/Toast";
 import { ConfirmationDialog } from "./components/ConfirmationDialog";
+import HelpPane from "./components/HelpPane";
 
 function App() {
   const { 
@@ -63,6 +64,17 @@ function App() {
   
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState<{ message: string; onConfirm: () => void } | null>(null);
+
+  // Help pane state - check localStorage on initial load
+  const [isHelpOpen, setIsHelpOpen] = useState(() => {
+    const showOnStartup = localStorage.getItem('showHelpOnStartup');
+    // If not set (first visit) or set to true/undefined, show help. If false, don't show.
+    return showOnStartup === 'false' ? false : true;
+  });
+
+  const handleDontShowAgain = () => {
+    localStorage.setItem('showHelpOnStartup', 'false');
+  };
 
   // Show toast helper
   const showToast = (message: string, type: ToastType = 'info') => {
@@ -245,6 +257,9 @@ function App() {
         />
       )}
 
+      {/* Help Pane */}
+      <HelpPane isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} onDontShowAgain={handleDontShowAgain} />
+
       <div className="flex w-screen min-h-screen">
     
       <div 
@@ -274,20 +289,36 @@ function App() {
               onClick={toggleCollapse} 
             />
             <h1 className="m-0 font-bold">Finance Wrapped</h1>
-            <div className="ml-auto flex items-center gap-1 bg-slate-800/50 rounded-lg p-1">
-              {(['yearly', 'monthly', 'total'] as SummationMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setSummationMode(mode)}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all capitalize ${
-                    summationMode === mode
-                      ? 'bg-blue-500/20 text-blue-400 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-300'
-                  }`}
-                >
-                  {mode}
-                </button>
-              ))}
+            <div className="ml-auto flex items-center gap-2">
+              {/* Help Button */}
+              <button
+                onClick={() => setIsHelpOpen(true)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] transition-colors"
+                aria-label="Open help"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </button>
+
+              {/* View Mode Toggle */}
+              <div className="flex items-center gap-1 bg-slate-800/50 rounded-lg p-1">
+                {(['yearly', 'monthly', 'total'] as SummationMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setSummationMode(mode)}
+                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all capitalize ${
+                      summationMode === mode
+                        ? 'bg-blue-500/20 text-blue-400 shadow-sm'
+                        : 'text-slate-400 hover:text-slate-300'
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           
