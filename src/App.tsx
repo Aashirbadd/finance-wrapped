@@ -274,6 +274,7 @@ function App() {
           onRemove={handleRemoveTransaction}
           onCsvSelect={handleCsvSelect}
           selectedDate={selectedDate}
+          onClearSelectedDate={() => setSelectedDate(null)}
           dataMode={dataMode}
           onDataModeChange={handleDataModeChange}
           showToast={showToast}

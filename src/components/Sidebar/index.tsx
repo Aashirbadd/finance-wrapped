@@ -12,12 +12,13 @@ interface SidebarProps {
   onRemove: (id: string) => void
   onCsvSelect: (contents: string[]) => void
   selectedDate: string | null
+  onClearSelectedDate: () => void
   dataMode: DataMode
   onDataModeChange: (mode: DataMode) => void
   showToast: (message: string, type?: 'info' | 'warning' | 'success') => void
 }
 
-export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove, onCsvSelect, selectedDate, dataMode, onDataModeChange, showToast }: SidebarProps) {
+export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemove, onCsvSelect, selectedDate, onClearSelectedDate, dataMode, onDataModeChange, showToast }: SidebarProps) {
   const handleCsvSelect = async (files: File[]) => {
     try {
       const contents = await Promise.all(files.map(file => file.text()))
@@ -66,7 +67,10 @@ export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemov
   };
 
   return (
-    <div className="relative h-screen py-8 px-4 bg-[var(--color-surface)] flex flex-col overflow-hidden">
+    <div 
+      className="relative h-screen py-8 px-4 bg-[var(--color-surface)] flex flex-col overflow-hidden"
+      onClick={selectedDate ? onClearSelectedDate : undefined}
+    >
       {/* Header with title and data mode toggle */}
       <div className="flex items-center gap-2 mb-4 shrink-0">
         <h1 className="font-bold text-lg">Expense List</h1>
