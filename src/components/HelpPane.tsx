@@ -57,9 +57,22 @@ interface HelpPaneProps {
 
 export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+  // Cache aspect ratios for each slide to enable smooth transitions
+  const [aspectRatioCache, setAspectRatioCache] = useState<Record<number, number>>({});
   const [dontShowAgain, setDontShowAgain] = useState(() => {
     return localStorage.getItem('showHelpOnStartup') === 'false';
   });
+
+  // Handle video metadata load to capture aspect ratio
+  const handleVideoLoaded = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    if (video.videoWidth && video.videoHeight) {
+      const ratio = video.videoWidth / video.videoHeight;
+      setAspectRatio(ratio);
+      setAspectRatioCache(prev => ({ ...prev, [currentSlide]: ratio }));
+    }
+  };
 
   const handleDontShowChange = () => {
     const newValue = !dontShowAgain;
@@ -102,8 +115,18 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
   useEffect(() => {
     if (isOpen) {
       setCurrentSlide(0);
+      setAspectRatio(null);
     }
   }, [isOpen]);
+
+  // Set aspect ratio from cache when slide changes (for smooth transition)
+  useEffect(() => {
+    if (aspectRatioCache[currentSlide]) {
+      setAspectRatio(aspectRatioCache[currentSlide]);
+    } else {
+      setAspectRatio(null);
+    }
+  }, [currentSlide, aspectRatioCache]);
 
   const isLastSlide = currentSlide === helpSlides.length - 1;
 
@@ -149,7 +172,10 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
           <h1 className="text-3xl font-bold mb-6">{slide.title}</h1>
 
           {/* GIF/Video - Bigger image, less padding */}
-          <div className="bg-[var(--color-surface)] rounded-xl mb-6 aspect-video flex items-center justify-center border border-[var(--color-border)] overflow-hidden">
+          <div 
+            className="bg-[var(--color-surface)] rounded-xl mb-6 flex items-center justify-center border border-[var(--color-border)] overflow-hidden transition-all duration-300"
+            style={aspectRatio ? { aspectRatio: aspectRatio } : undefined}
+          >
             {slide.videoUrl ? (
               <video
                 src={slide.videoUrl}
@@ -157,6 +183,7 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
                 loop
                 muted
                 playsInline
+                onLoadedMetadata={handleVideoLoaded}
                 className="w-full h-full object-contain"
               />
             ) : (
