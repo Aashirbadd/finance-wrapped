@@ -10,6 +10,7 @@ import { DUMMY_LEDGER } from "./components/Sidebar/dummyData";
 import { Toast, type ToastType } from "./components/Toast";
 import { ConfirmationDialog } from "./components/ConfirmationDialog";
 import HelpPane from "./components/HelpPane";
+import MobileWarning from "./components/MobileWarning";
 
 function App() {
   const { 
@@ -239,6 +240,11 @@ function App() {
 
   return (
     <>
+      {/* Mobile Warning - shown only on screens smaller than 1120px */}
+      <div className="min-[1120px]:hidden">
+        <MobileWarning />
+      </div>
+
       {/* Toast notification */}
       {toast && (
         <Toast 

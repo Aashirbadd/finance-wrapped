@@ -68,3 +68,22 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-slate-800 rounded-full hover:bg-slate-700;
 }
+
+/* Horizontal bounce animations for mobile warning */
+@keyframes bounce-left {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes bounce-right {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
