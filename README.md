@@ -1,83 +1,43 @@
 # Finance Wrapped 💸
 
-<img width="1680" height="959" alt="Screenshot 2026-02-17 at 3 08 14 PM" src="https://github.com/user-attachments/assets/ed8bb25f-cb88-4baa-845e-5d05f771285c" />
+**[Live Link](https://finance-wrapped-nine.vercel.app/)**
 
+<!-- Intro GIF Demo -->
+<img alt="Finance Wrapped Intro" src="https://github.com/user-attachments/assets/c782990b-201d-4931-8149-4a68eb8c9bd7" />
 
-__Turn bank statements into beautiful visualizations. Parse PDFs locally, track expenses, and see your finances in a stunning dark-mode dashboard. 100% private — your data never leaves your browser.__
+---
 
-Built with React and Vite for a fast, modern frontend experience. Styling powered by Tailwind CSS with a sleek dark theme. PDF text extraction handled locally via Tesseract.js OCR, keeping all processing on-device. Interactive area charts visualize your income, expenses, and net worth over time using Recharts.
+Turn bank statements into beautiful visualizations. Parse CSV's locally, track expenses, and see your finances in a stunning dark-mode dashboard. **100% private — your data never leaves your browser.**
 
+## Features
 
-# React + TypeScript + Vite
+- 📊 **Interactive Visualizations** - Beautiful area charts showing income, expenses, and net worth over time
+- 📈 **CSV Import** - Drag and drop CSV files to import transactions
+- ✨ **Manual Transactions** - Add transactions manually with ease
+- 🌙 **Dark Mode** - Sleek dark theme for a modern look
+- 🔒 **Privacy First** - All data processing happens in your browser
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Tech Stack
 
-Currently, two official plugins are available:
+- **React** + **TypeScript** + **Vite**
+- **Tailwind CSS** for styling
+- **Recharts** for interactive charts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
 
-## React Compiler
+```bash
+# Clone the repository
+git clone https://github.com/Aashirbadd/finance-wrapped.git
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Install dependencies
+npm install
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Build for Production
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
 ```
