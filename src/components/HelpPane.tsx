@@ -166,10 +166,10 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 pb-2 overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center px-2 pb-2 overflow-hidden">
         <div className="max-w-4xl w-full text-center">
           {/* Title - Smaller */}
-          <h1 className="text-3xl font-bold mb-6">{slide.title}</h1>
+          <h1 className="text-3xl font-bold mb-6 px-4">{slide.title}</h1>
 
           {/* GIF/Video - Bigger image, less padding */}
           <div 
@@ -203,7 +203,7 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
       </div>
 
       {/* Bottom Bar - Navigation */}
-      <div className="shrink-0 pb-4">
+      <div className="shrink-0 pb-4  px-6">
         <div className="flex items-center justify-center gap-4">
           {/* Previous Button */}
           <button
