@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import testGif from '../assets/testGif.gif';
 import introVideo from '../assets/IntroVideo.mp4';
 import manualTransactions from '../assets/ManualTransactions.mp4';
@@ -63,6 +63,9 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
   const [dontShowAgain, setDontShowAgain] = useState(() => {
     return localStorage.getItem('showHelpOnStartup') === 'false';
   });
+  
+  // Refs for each video to control play/pause and reset position
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   // Handle video metadata load to capture aspect ratio
   const handleVideoLoaded = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -128,6 +131,43 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
     }
   }, [currentSlide, aspectRatioCache]);
 
+  // Play current video and pause/reset others when slide changes
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const videos = videoRefs.current;
+    if (!videos || videos.length === 0) return;
+    
+    videos.forEach((video, index) => {
+      if (video) {
+        if (index === currentSlide) {
+          // Reset to start and play when viewing this slide
+          video.currentTime = 0;
+          video.play().catch(() => {}); // Ignore play errors
+        } else {
+          // Pause and reset when not viewing
+          video.pause();
+          video.currentTime = 0;
+        }
+      }
+    });
+  }, [currentSlide, isOpen]);
+
+  // Pause all videos and reset when pane closes
+  useEffect(() => {
+    if (!isOpen) {
+      const videos = videoRefs.current;
+      if (!videos) return;
+      
+      videos.forEach((video) => {
+        if (video) {
+          video.pause();
+          video.currentTime = 0;
+        }
+      });
+    }
+  }, [isOpen]);
+
   const isLastSlide = currentSlide === helpSlides.length - 1;
 
   const handleGetStarted = () => {
@@ -172,27 +212,34 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
           <h1 className="text-3xl font-bold mb-6 px-4">{slide.title}</h1>
 
           {/* GIF/Video - Bigger image, less padding */}
+          {/* Pre-load all videos at once so switching is instant - first video loads first for faster initial display */}
           <div 
             className="bg-[var(--color-surface)] rounded-xl mb-6 flex items-center justify-center border border-[var(--color-border)] overflow-hidden transition-all duration-300"
             style={aspectRatio ? { aspectRatio: aspectRatio } : undefined}
           >
-            {slide.videoUrl ? (
-              <video
-                src={slide.videoUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                onLoadedMetadata={handleVideoLoaded}
-                className="w-full h-full object-contain"
-              />
-            ) : (
-              <img 
-                src={slide.gifUrl} 
-                alt={slide.title}
-                className="w-full h-full object-contain"
-              />
-            )}
+            {helpSlides.map((helpSlide, index) => (
+              <div key={index} className={index === currentSlide ? 'block w-full h-full' : 'hidden'}>
+                {helpSlide.videoUrl ? (
+                  <video
+                    ref={(el) => { videoRefs.current[index] = el; }}
+                    src={helpSlide.videoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload={index === 0 ? 'auto' : 'metadata'}
+                    onLoadedMetadata={(e) => index === currentSlide && handleVideoLoaded(e)}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <img 
+                    src={helpSlide.gifUrl} 
+                    alt={helpSlide.title}
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
+            ))}
           </div>
 
           {/* Feature Text */}
