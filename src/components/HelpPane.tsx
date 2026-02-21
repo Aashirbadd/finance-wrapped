@@ -1,37 +1,51 @@
 import { useState, useEffect, useCallback } from 'react';
 import testGif from '../assets/testGif.gif';
+import introVideo from '../assets/IntroVideo.mp4';
+import manualTransactions from '../assets/ManualTransactions.mp4';
+import dragAndDrop from '../assets/Drag&Drop.mp4';
+import areagraph from '../assets/AreaGraph.mp4';
+import conclusion from '../assets/Conclusion.mp4'
+
 
 interface HelpSlide {
   title: string;
-  gifUrl: string;
+  gifUrl?: string;
+  videoUrl?: string;
   feature: string;
 }
 
 const helpSlides: HelpSlide[] = [
   {
     title: 'Welcome to Finance Wrapped',
+    videoUrl: introVideo,
     gifUrl: testGif,
     feature: 'Track your expenses, visualize your spending, and gain insights into your financial health. Use the sidebar to manage transactions and the main area to view charts.'
   },
   {
-    title: 'Adding Transactions',
-    gifUrl: testGif,
-    feature: 'Add income or expenses manually using the form in the sidebar. Enter the date, description, and amount. Positive amounts are income, negative amounts are expenses.'
+    title: 'Importing your Transactions',
+    videoUrl: dragAndDrop,
+    feature: 'Import your bank statements by dragging and dropping CSV files. Make sure the CSV format is Date, Description, Debit (Expenses), Credit (Income).'
   },
   {
-    title: 'CSV Import',
-    gifUrl: testGif,
-    feature: 'Import your bank statements by dragging and dropping CSV files. The app automatically detects date formats and parses your transactions.'
+    title: 'Manually Adding Transactions',
+    videoUrl: manualTransactions,
+    feature: 'Use the sidebar to manually add transactions. Positive amounts are income, negative amounts are expenses. Press the [↻] button to add recurring transactions (e.g. monthly rent). The app will automatically generate future transactions based on the frequency you select.'
   },
+  
   {
     title: 'Viewing the Chart',
-    gifUrl: testGif,
-    feature: 'Click on any bar in the chart to filter transactions for that month. Use the toggle buttons (Total/Monthly/Yearly) to switch between different views.'
+    videoUrl: areagraph,
+    feature: 'Click on any data point in the chart to highlight transactions for that day. Use the toggle buttons (Total/Monthly/Yearly) to switch between different views.'
   },
+  // {
+  //   title: 'Resizing the Sidebar',
+  //   gifUrl: testGif,
+  //   feature: 'Drag the right edge of the sidebar to resize it. The sidebar can be collapsed completely by clicking the toggle button in the header.'
+  // },
   {
-    title: 'Resizing the Sidebar',
-    gifUrl: testGif,
-    feature: 'Drag the right edge of the sidebar to resize it. The sidebar can be collapsed completely by clicking the toggle button in the header.'
+    title: 'That\'s it!',
+    videoUrl: conclusion,
+    feature: 'The app starts in "Demo" mode for you to get the hang of it, switch to "Your Data" mode and track your own finances when you\'re ready! If you ever need this tutorial again, you can find it in the help menu on the top right.'
   }
 ];
 
@@ -130,21 +144,32 @@ export default function HelpPane({ isOpen, onClose, onDontShowAgain }: HelpPaneP
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 pb-2 overflow-hidden">
-        <div className="max-w-3xl w-full text-center">
+        <div className="max-w-4xl w-full text-center">
           {/* Title - Smaller */}
           <h1 className="text-3xl font-bold mb-6">{slide.title}</h1>
 
-          {/* GIF - Bigger image, less padding */}
+          {/* GIF/Video - Bigger image, less padding */}
           <div className="bg-[var(--color-surface)] rounded-xl mb-6 aspect-video flex items-center justify-center border border-[var(--color-border)] overflow-hidden">
-            <img 
-              src={slide.gifUrl} 
-              alt={slide.title}
-              className="w-full h-full object-contain"
-            />
+            {slide.videoUrl ? (
+              <video
+                src={slide.videoUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <img 
+                src={slide.gifUrl} 
+                alt={slide.title}
+                className="w-full h-full object-contain"
+              />
+            )}
           </div>
 
           {/* Feature Text */}
-          <p className="text-base text-slate-300 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed px-2">
             {slide.feature}
           </p>
         </div>
