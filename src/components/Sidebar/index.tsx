@@ -102,7 +102,7 @@ export default function Sidebar({ currentWidth, onResize, ledger, onAdd, onRemov
       
       {/* Resize Handle */}
       <div
-        className="absolute top-0 right-0 bottom-0 w-1 bg-[var(--color-border)] hover:[var(--color-surface-hover)] cursor-col-resize transition-colors z-50"
+        className="absolute top-0 right-0 bottom-0 w-1 bg-[var(--color-border)] hover:[var(--color-surface-hover)] cursor-col-resize transition-colors z-20"
         onMouseDown={handleMouseDown}
         title="Drag to resize"
       />

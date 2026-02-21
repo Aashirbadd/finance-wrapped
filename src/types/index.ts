@@ -28,7 +28,23 @@ export type Ledger = Transaction[];
 
 export type SummationMode = 'yearly' | 'monthly' | 'total';
 
-export type DataMode = 'demo' | 'user' | 'clear';
+export const DATA_MODE = {
+  DEMO: 'demo',
+  USER: 'user',
+  CLEAR: 'clear',
+} as const;
+
+export type DataModeKey = keyof typeof DATA_MODE;
+
+export type DataMode = typeof DATA_MODE[keyof typeof DATA_MODE];
+
+export const LOCAL_STORAGE_KEYS = {
+  DATA_MODE: 'dataMode',
+  LEDGER: 'ledger',
+  SHOW_HELP_ON_STARTUP: 'showHelpOnStartup',
+} as const;
+
+export type LocalStorageKey = typeof LOCAL_STORAGE_KEYS[keyof typeof LOCAL_STORAGE_KEYS];
 
 export type RecurringFrequency = 'weekly' | 'bi-weekly' | 'monthly';
 

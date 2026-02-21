@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import SidebarButton from "./components/SidebarButton";
 import { useSidebar } from "./hooks/useSidebar";
 import type { Ledger, Transaction, SummationMode, DataMode } from "./types";
+import { DATA_MODE, LOCAL_STORAGE_KEYS } from "./types";
 import { MonthlyChart } from "./components/MonthlyChart";
 import { parseCSV } from "./lib/csvProcessor";
 import { DUMMY_LEDGER } from "./components/Sidebar/dummyData";
@@ -23,21 +24,22 @@ function App() {
 
   // Data mode: demo (shows dummy data), user (user's own data), clear (empty)
   const [dataMode, setDataMode] = useState<DataMode>(() => {
-    const saved = localStorage.getItem('dataMode');
-    if (saved && ['demo', 'user', 'clear'].includes(saved)) {
-      return saved as DataMode;
+    let saved = localStorage.getItem(LOCAL_STORAGE_KEYS.DATA_MODE);
+    if (!saved) {
+      saved = DATA_MODE.DEMO;
+      localStorage.setItem(LOCAL_STORAGE_KEYS.DATA_MODE, DATA_MODE.DEMO);
     }
-    return 'demo';
+    return saved as DataMode;
   });
 
   // User's ledger (stored in localStorage, or DUMMY_LEDGER if in demo mode)
   const [userLedger, setUserLedger] = useState<Ledger>(() => {
-    const savedMode = localStorage.getItem('dataMode');
-    if (savedMode === 'demo') {
-      // If demo mode, load dummy data
+    const savedMode = localStorage.getItem(LOCAL_STORAGE_KEYS.DATA_MODE);
+    
+    if (savedMode === DATA_MODE.DEMO) {
       return [...DUMMY_LEDGER];
     }
-    const saved = localStorage.getItem('ledger');
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.LEDGER);
     if (saved) {
       return JSON.parse(saved);
     }
@@ -46,12 +48,12 @@ function App() {
 
   // Save to localStorage whenever userLedger changes (only in non-demo mode)
   useEffect(() => {
-    if (dataMode !== 'demo') {
-      localStorage.setItem('ledger', JSON.stringify(userLedger));
+    if (dataMode !== DATA_MODE.DEMO) {
+      localStorage.setItem(LOCAL_STORAGE_KEYS.LEDGER, JSON.stringify(userLedger));
     }
   }, [userLedger, dataMode]);
 
-  // Single source of truth: effective ledger (always use userLedger, which gets populated differently based on mode)
+  // Single source of truth: effective ledger
   const ledger = userLedger;
 
   // Selected date from chart interaction
@@ -68,13 +70,13 @@ function App() {
 
   // Help pane state - check localStorage on initial load
   const [isHelpOpen, setIsHelpOpen] = useState(() => {
-    const showOnStartup = localStorage.getItem('showHelpOnStartup');
+    const showOnStartup = localStorage.getItem(LOCAL_STORAGE_KEYS.SHOW_HELP_ON_STARTUP);
     // If not set (first visit) or set to true/undefined, show help. If false, don't show.
     return showOnStartup === 'false' ? false : true;
   });
 
   const handleDontShowAgain = () => {
-    localStorage.setItem('showHelpOnStartup', 'false');
+    localStorage.setItem(LOCAL_STORAGE_KEYS.SHOW_HELP_ON_STARTUP, 'false');
   };
 
   // Show toast helper
@@ -89,26 +91,26 @@ function App() {
 
   // Handle data mode changes
   const handleDataModeChange = (mode: DataMode) => {
-    if (mode === 'clear') {
+    if (mode === DATA_MODE.CLEAR) {
       showConfirmDialog('Are you sure you want to clear your data? This cannot be undone.', () => {
         // Clear data and switch to user mode (shows empty state)
         setUserLedger([]);
-        localStorage.removeItem('ledger');
-        setDataMode('user');
-        localStorage.setItem('dataMode', 'user');
+        localStorage.removeItem(LOCAL_STORAGE_KEYS.LEDGER);
+        setDataMode(DATA_MODE.USER);
+        localStorage.setItem(LOCAL_STORAGE_KEYS.DATA_MODE, DATA_MODE.USER);
         showToast('Data cleared', 'success');
         setConfirmDialog(null);
       });
-    } else if (mode === 'demo') {
+    } else if (mode === DATA_MODE.DEMO) {
       // Switch to demo mode - load fresh dummy data
-      setDataMode('demo');
-      localStorage.setItem('dataMode', 'demo');
+      setDataMode(DATA_MODE.DEMO);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.DATA_MODE, DATA_MODE.DEMO);
       setUserLedger([...DUMMY_LEDGER]);
     } else {
       // User mode - load from localStorage
-      setDataMode('user');
-      localStorage.setItem('dataMode', 'user');
-      const saved = localStorage.getItem('ledger');
+      setDataMode(DATA_MODE.USER);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.DATA_MODE, DATA_MODE.USER);
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.LEDGER);
       if (saved) {
         setUserLedger(JSON.parse(saved));
       } else {
