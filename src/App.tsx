@@ -27,7 +27,7 @@ function App() {
     if (saved && ['demo', 'user', 'clear'].includes(saved)) {
       return saved as DataMode;
     }
-    return 'clear';
+    return 'demo';
   });
 
   // User's ledger (stored in localStorage, or DUMMY_LEDGER if in demo mode)
